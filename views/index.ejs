@@ -1,0 +1,548 @@
+<%- include('templates/start') %> <%- include('templates/sidebar') %>
+<!-- audio player -->
+<div class="fixed bottom-0 w-full">
+  <div
+    class="bg-[#121212] py-5 border-t border-neutral-800 px-8 flex justify-between items-center w-full"
+  >
+    <!-- Song Info -->
+    <div class="w-96 truncate">
+      <h2 id="songTitle" class="text-white text-lg font-bold">Song Title</h2>
+      <p id="artistName" class="text-gray-400">Artist Name</p>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="flex flex-col flex-1 justify-center items-center">
+      <!-- Play/Pause & Volume Controls -->
+      <div class="flex items-center space-x-2 justify-center">
+        <!-- Previous Button -->
+        <button
+          id="prevBtn"
+          class="bg-green-500 hover:bg-green-600 active:bg-green-700 p-3 rounded-full text-black font-bold flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined"> skip_previous </span>
+        </button>
+
+        <!-- Play/Pause Button -->
+        <button
+          id="playPauseBtn"
+          class="bg-green-500 hover:bg-green-600 active:bg-green-700 p-3 rounded-full text-black font-bold flex items-center justify-center"
+        >
+          <span id="playPauseIcon" class="material-symbols-outlined">
+            play_arrow
+          </span>
+        </button>
+
+        <!-- Next Button -->
+        <button
+          id="nextBtn"
+          class="bg-green-500 hover:bg-green-600 active:bg-green-700 p-3 rounded-full text-black font-bold flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined"> skip_next </span>
+        </button>
+
+        <!-- Volume Control -->
+      </div>
+      <audio id="audioPlayer" class="">
+        <source id="audioSource" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+
+      <!-- Seekbar -->
+      <input
+        id="seekBar"
+        type="range"
+        value="0"
+        max="100"
+        class="w-full accent-green-500 py-5"
+      />
+    </div>
+
+    <div class="flex items-center space-x-2 w-96 justify-end">
+      <!-- queue -->
+      <button id="queueToggleBtn" class="text-[#535353]">
+        <span class="material-symbols-outlined"> queue_music </span>
+      </button>
+
+      <!-- <span class="">Volume</span> -->
+      <div class="flex space-x-2 items-center">
+        <span class="material-symbols-outlined text-[#535353]">
+          volume_down_alt
+        </span>
+        <input
+          id="volumeControl"
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value="1"
+          class="accent-green-500 w-24"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ps-96">
+  <%- include('templates/navbar') %>
+  <div class="overflow-y-auto overflow-hidden hide-scrollbar">
+    <div class="p-8 flex items-center">
+      <button
+        id="open_add_modal"
+        class="font-bold bg-green-500 border border-green-500 rounded-full px-8 py-2 hover:bg-green-600 hover:border-green-600 active:border-green-700 active:bg-green-700 me-2"
+      >
+        Add Song
+      </button>
+    </div>
+
+    <div class="min-h-[600px] px-8 py-4">
+      <span class="text-3xl text-white font-bold mb-4"> Songs </span>
+
+      <table
+        class="display table-auto divide-y-2 divide-green-500 w-full"
+        id="songs"
+      >
+        <thead class="">
+          <tr>
+            <th class="p-4 font-normal text-[#b3b3b3]">Song</th>
+            <th class="p-4 font-normal text-[#b3b3b3]">Artist</th>
+            <th class="p-4 font-normal text-[#b3b3b3]">Genre</th>
+            <th class="p-4 font-normal text-[#b3b3b3]">Actions</th>
+            <!-- <th></th> -->
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-700 text-center">
+          <% songs.forEach((songs) => { %>
+          <tr class="text-white hover:bg-[#535353]">
+            <td class="p-4">
+              <span class="flex items-center">
+                <!-- Placeholder image, you can update this with actual image field if needed -->
+                <img
+                  src="img/songlify_logo.png"
+                  class="mx-4 rounded-full"
+                  alt=""
+                  height="48px"
+                  width="48px"
+                />
+                <%= songs.title %>
+                <!-- Display song title -->
+              </span>
+            </td>
+            <td class="p-4">
+              <span><%= songs.artist %></span>
+              <!-- Display artist -->
+            </td>
+            <!-- Placeholder for genre -->
+            <td class="p-4 font-normal"><%= songs.genre %></td>
+            <!-- buttons -->
+            <td class="p-4 font-normal flex items-center justify-center">
+              <button
+                class="p-2 flex bg-green-500 hover:bg-green-600 active:bg-green-700 rounded-full font-bold text-black me-4 play-btn"
+                data-song-path="<%= songs.path %>"
+                data-song-title="<%= songs.title %>"
+                data-song-artist="<%= songs.artist %>"
+              >
+                <span class="material-symbols-outlined"> play_arrow </span>
+              </button>
+
+              <button
+                class="p-2 flex bg-green-500 hover:bg-green-600 active:bg-green-700 rounded-full font-bold text-black me-4"
+              >
+                <span class="material-symbols-outlined"> favorite </span>
+              </button>
+
+              <a
+                href="/edit_song/<%= songs.id %>"
+                class="p-2 flex bg-green-500 hover:bg-green-600 active:bg-green-700 rounded-full font-bold text-black me-4"
+              >
+                <span class="material-symbols-outlined"> edit </span>
+              </a>
+              <button
+                class="p-2 flex bg-green-500 hover:bg-green-600 active:bg-green-700 rounded-full font-bold text-black me-4 add-to-queue-btn"
+                data-song-path="<%= songs.path %>"
+                data-song-title="<%= songs.title %>"
+                data-song-artist="<%= songs.artist %>"
+              >
+                <span class="material-symbols-outlined"> add_to_queue </span>
+              </button>
+              <button
+                class="p-2 flex bg-green-500 hover:bg-green-600 active:bg-green-700 rounded-full font-bold text-black me-4"
+                onclick="deleteSong('<%= songs.id %>', this)"
+              >
+                <span class="material-symbols-outlined"> delete </span>
+              </button>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- queue modal structire -->
+<!-- Modal for Song Queue -->
+<div
+  id="queueModal"
+  class="fixed top-0 right-0 h-full bg-[#121212] w-1/3 max-w-sm shadow-lg transform translate-x-full transition-transform duration-300 z-50 border-l border-neutral-800"
+>
+  <div class="p-8 overflow-hidden">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="font-bold text-3xl text-green-500">Queue</h2>
+      <button id="closeQueueModal" class="text-gray-400 hover:text-white">
+        &times;
+        <!-- Close Button -->
+      </button>
+    </div>
+
+    <ul
+      id="queueList"
+      class="mt-4 text-gray-400 list-none overflow-hidden overflow-y-auto"
+    >
+      <!-- Queued songs will be displayed here -->
+    </ul>
+  </div>
+</div>
+
+<!-- queue -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const queueModal = document.getElementById("queueModal");
+    const queueToggleBtn = document.getElementById("queueToggleBtn");
+    const closeQueueModal = document.getElementById("closeQueueModal");
+    const queueListElem = document.getElementById("queueList");
+
+    let songQueue = []; // Array to store the queued songs
+
+    // Toggle the modal visibility
+    queueToggleBtn.addEventListener("click", () => {
+      queueModal.classList.toggle("translate-x-full"); // Hide/Show the modal
+    });
+
+    // Close the modal when the close button is clicked
+    closeQueueModal.addEventListener("click", () => {
+      queueModal.classList.add("translate-x-full"); // Hide the modal
+    });
+
+    // Function to update the queue display
+    function updateQueueDisplay() {
+      queueListElem.innerHTML = ""; // Clear the current list
+
+      if (songQueue.length === 0) {
+        queueListElem.innerHTML = "<li>No songs in queue</li>";
+      } else {
+        songQueue.forEach((song, index) => {
+          const listItem = document.createElement("li");
+
+          // Highlight the next song to be played (the first one in the queue)
+          if (index === 0) {
+            listItem.innerHTML = `<strong>Next: </strong> ${song.title} by ${song.artist}`;
+            listItem.classList.add("text-green-500");
+          } else {
+            listItem.innerText = `${song.title} by ${song.artist}`;
+          }
+
+          queueListElem.appendChild(listItem);
+        });
+      }
+    }
+
+    // Queue button event listener
+    document.querySelectorAll(".add-to-queue-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const songPath =
+          event.target.closest(".add-to-queue-btn").dataset.songPath;
+        const songTitle =
+          event.target.closest(".add-to-queue-btn").dataset.songTitle;
+        const songArtist =
+          event.target.closest(".add-to-queue-btn").dataset.songArtist;
+
+        // Add song to the queue
+        songQueue.push({
+          path: songPath,
+          title: songTitle,
+          artist: songArtist,
+        });
+
+        console.log(`Added to queue: ${songTitle} by ${songArtist}`);
+        updateQueueDisplay(); // Update the queue display
+      });
+    });
+  });
+</script>
+
+<!-- add modal structure -->
+<div
+  id="add_song_modal"
+  class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50"
+>
+  <div class="bg-[#121212] p-8 rounded-lg max-w-xl w-full relative">
+    <button
+      id="close_song_modal"
+      class="absolute top-4 right-4 text-white text-xl"
+    >
+      &times;
+    </button>
+    <h2 class="text-white text-2xl font-bold mb-8">Add Song</h2>
+
+    <form
+      action="/add_song"
+      method="post"
+      enctype="multipart/form-data"
+      class="bg-[#121212] rounded-lg"
+    >
+      <label for="title" class="text-xl font-bold text-white"
+        >Song Title:</label
+      >
+      <input
+        type="text"
+        name="title"
+        id="title"
+        class="text-white block mt-2 mb-4 py-2 px-4 rounded-full w-full bg-[#535353] outline-none focus:outline focus:outline-green-500"
+        placeholder="Enter song title"
+        required
+      />
+
+      <label for="artist" class="text-xl font-bold text-white">Artist:</label>
+      <input
+        type="text"
+        name="artist"
+        id="artist"
+        class="text-white block mt-2 mb-4 py-2 px-4 rounded-full w-full bg-[#535353] outline-none focus:outline focus:outline-green-500"
+        placeholder="Enter song artist"
+        required
+      />
+
+      <label for="genre" class="text-xl font-bold text-white">Genre:</label>
+      <input
+        type="text"
+        name="genre"
+        id="genre"
+        class="text-white block mt-2 mb-4 py-2 px-4 rounded-full w-full bg-[#535353] outline-none focus:outline focus:outline-green-500"
+        placeholder="Enter song genre"
+        required
+      />
+
+      <label for="path" class="text-xl font-bold text-white">Path:</label>
+      <input
+        type="file"
+        name="path"
+        id="path"
+        accept="audio/*"
+        class="cursor-pointer text-white block mt-2 mb-8 py-2 px-4 rounded-full w-full bg-[#535353] file:rounded-lg file:border-none file:bg-inherit file:text-green-500 file:font-bold"
+        required
+      />
+
+      <input
+        type="submit"
+        value="Upload Song"
+        class="bg-green-500 px-8 py-2 rounded-full hover:bg-green-600 active:bg-green-700 font-bold cursor-pointer w-full"
+      />
+    </form>
+  </div>
+</div>
+
+<!-- audio player -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const audioPlayer = document.getElementById("audioPlayer");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const playPauseIcon = document.getElementById("playPauseIcon");
+    const seekBar = document.getElementById("seekBar");
+    const volumeControl = document.getElementById("volumeControl");
+    const songTitleElem = document.getElementById("songTitle");
+    const artistNameElem = document.getElementById("artistName");
+    const audioSource = document.getElementById("audioSource");
+
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    let isPlaying = false;
+    let songQueue = []; // This array will hold the queue
+    let currentSongIndex = -1; // Keeps track of the current song being played
+
+    // Play button event listener for each song
+    document.querySelectorAll(".play-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const songPath = event.target.closest(".play-btn").dataset.songPath;
+        const songTitle = event.target.closest(".play-btn").dataset.songTitle;
+        const songArtist = event.target.closest(".play-btn").dataset.songArtist;
+
+        // Update song title and artist
+        songTitleElem.textContent = songTitle;
+        artistNameElem.textContent = songArtist;
+
+        // Check if a valid song path is provided
+        if (songPath) {
+          // Play the clicked song immediately
+          playSong(songPath, songTitle, songArtist);
+        } else {
+          console.error("Song path is missing!");
+        }
+      });
+    });
+
+    // Queue button event listener
+    document.querySelectorAll(".add-to-queue-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const songPath =
+          event.target.closest(".add-to-queue-btn").dataset.songPath;
+        const songTitle =
+          event.target.closest(".add-to-queue-btn").dataset.songTitle;
+        const songArtist =
+          event.target.closest(".add-to-queue-btn").dataset.songArtist;
+
+        // Add song to the queue
+        songQueue.push({
+          path: songPath,
+          title: songTitle,
+          artist: songArtist,
+        });
+
+        console.log(`Added to queue: ${songTitle} by ${songArtist}`);
+      });
+    });
+
+    // Play the song
+    function playSong(songPath, songTitle, songArtist) {
+      // Update song title and artist
+      songTitleElem.textContent = songTitle;
+      artistNameElem.textContent = songArtist;
+
+      // Update the audio source
+      audioSource.src = songPath;
+
+      // Load the new audio file into the player
+      audioPlayer.load();
+
+      // Play the song
+      audioPlayer.play();
+      isPlaying = true;
+      playPauseIcon.textContent = "pause"; // Change the icon to pause
+    }
+
+    // When the song ends, play the next song in the queue if available
+    audioPlayer.addEventListener("ended", () => {
+      if (songQueue.length > 0) {
+        const nextSong = songQueue.shift(); // Get the next song from the queue
+        playSong(nextSong.path, nextSong.title, nextSong.artist);
+      } else {
+        playPauseIcon.textContent = "play_arrow"; // Reset the icon to play
+        isPlaying = false; // No more songs to play
+      }
+    });
+
+    // Play/Pause button functionality
+    playPauseBtn.addEventListener("click", () => {
+      if (isPlaying) {
+        audioPlayer.pause();
+        playPauseIcon.textContent = "play_arrow";
+      } else {
+        audioPlayer.play();
+        playPauseIcon.textContent = "pause";
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // Seekbar update as the audio plays
+    audioPlayer.addEventListener("timeupdate", () => {
+      if (audioPlayer.duration) {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        seekBar.value = progress;
+      }
+    });
+
+    // Seek to a different part of the song
+    seekBar.addEventListener("input", () => {
+      const seekTo = (seekBar.value / 100) * audioPlayer.duration;
+      audioPlayer.currentTime = seekTo;
+    });
+
+    // Volume control
+    volumeControl.addEventListener("input", () => {
+      audioPlayer.volume = volumeControl.value;
+    });
+
+    // When the song ends, keep the current song loaded but stop playing
+    audioPlayer.addEventListener("ended", () => {
+      playPauseIcon.textContent = "play_arrow";
+      isPlaying = false;
+    });
+
+    // Next and Previous button functionalities (optional)
+    nextBtn.addEventListener("click", () => {
+      if (songQueue.length > 0) {
+        const nextSong = songQueue.shift();
+        playSong(nextSong.path, nextSong.title, nextSong.artist);
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentSongIndex > 0) {
+        currentSongIndex--;
+        const prevSong = songQueue[currentSongIndex];
+        playSong(prevSong.path, prevSong.title, prevSong.artist);
+      }
+    });
+  });
+</script>
+
+<!-- open add modal -->
+<script>
+  // Modal open and close logic
+  const openModalBtn = document.getElementById("open_add_modal");
+  const modal = document.getElementById("add_song_modal");
+  const closeModalBtn = document.getElementById("close_song_modal");
+
+  openModalBtn.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  });
+
+  closeModalBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+  });
+</script>
+
+<!-- DataTables JS -->
+ <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+ <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
+<script>
+  new DataTable("#songs", {
+    layout: {
+      bottomEnd: {
+        paging: {
+          firstLast: false,
+        },
+      },
+    },
+  });
+</script>
+
+<!-- delete song -->
+<script>
+  function deleteSong(id, button) {
+    if (confirm("This can't be undone")) {
+      fetch(`/delete_song/${id}`, {
+        method: "DELETE",
+      }).then((response) =>
+        response.json().then((data) => {
+          if (data.message === "Song deleted successfully") {
+            alert("Song deleted successfully");
+            button.closest("tr").remove();
+          } else {
+            alert("Song deleted unsuccessfully");
+          }
+        })
+      );
+    }
+  }
+</script>
+<%- include('templates/end') %>

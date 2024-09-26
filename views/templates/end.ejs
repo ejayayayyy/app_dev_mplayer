@@ -1,0 +1,23 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const audioPlayer = document.getElementById('audio-player');
+  
+      document.querySelectorAll('.play-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const songPath = this.getAttribute('data-song-path'); // Get song path
+          const songId = this.getAttribute('data-song-id'); // Unique song id
+  
+          // Update the audio player source and play the song
+          audioPlayer.src = songPath;
+          audioPlayer.style.display = "block"; // Show the player if it's hidden
+          audioPlayer.play();
+  
+          console.log("Now playing song with ID:", songId, "Path:", songPath);
+        });
+      });
+    });
+  </script>
+  
+
+</body>
+</html>

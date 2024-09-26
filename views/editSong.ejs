@@ -1,0 +1,51 @@
+<%- include('templates/start') %> <%- include('templates/sidebar') %>
+<div class="ps-96">
+  <%- include('templates/navbar') %>
+  <div class="">
+    <div class="p-8 bg-red500">
+      <span class="text-3xl text-white font-bold"> Upload Song </span>
+
+      <!-- add/upload song -->
+      <form
+        action="/edit_song/<%= song.id %>"
+        method="post"
+        class="p-8 bg-[#121212] my-8 rounded-lg"
+      >
+        <label for="title" class="text-xl font-bold text-white"
+          >Song Title:
+        </label>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          class="text-white block mt-2 mb-4 py-2 px-4 rounded-full w-2/4 outline-none focus:outline focus:outline-green-500 bg-[#535353]"
+          value="<%= song.title %>"
+        />
+
+        <label for="artist" class="text-xl font-bold text-white"
+          >Artist:
+        </label>
+        <input
+          type="text"
+          name="artist"
+          id="artist"
+          class="text-white block mt-2 mb-4 py-2 px-4 rounded-full w-2/4 outline-none focus:outline focus:outline-green-500 bg-[#535353]"
+          value="<%= song.artist %>"
+        />
+
+        <label for="artist" class="text-xl font-bold text-white"
+          >Genre:
+        </label>
+        <input
+          type="text"
+          name="genre"
+          id="genre"
+          class="text-white block mt-2 mb-4 py-2 px-4 rounded-full w-2/4 outline-none focus:outline focus:outline-green-500 bg-[#535353]"
+          value="<%= song.genre %>"
+        />
+        <input type="submit" value="Update Song" class="bg-green-500 px-8 py-2 rounded-full hover:bg-green-600 active:bg-green-700 font-bold cursor-pointer">
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('templates/end') %>
